@@ -1,0 +1,18 @@
+version: "3.3"
+
+volumes:
+  prometheus-data:
+
+services:
+  demo:
+    build:
+      context: .docker
+    ports:
+      - "9001:9001" # Supervisor admin panel
+
+  prometheus:
+    image: bitnami/prometheus:latest
+    volumes:
+      - prometheus-data:/opt/bitnami/prometheus/data
+    ports:
+      - "9090:9090"
