@@ -1,7 +1,7 @@
 {
     "queues": [
         {
-            "name": "demo.Q.incoming.1",
+            "name": "demo.Q.incoming.shard_0",
             "vhost": "/",
             "durable": true,
             "auto_delete": false,
@@ -10,7 +10,79 @@
             }
         },
         {
-            "name": "demo.Q.incoming.2",
+            "name": "demo.Q.incoming.shard_1",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-dead-letter-exchange": "demo.X.incoming.deadletter"
+            }
+        },
+        {
+            "name": "demo.Q.incoming.shard_2",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-dead-letter-exchange": "demo.X.incoming.deadletter"
+            }
+        },
+        {
+            "name": "demo.Q.incoming.shard_3",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-dead-letter-exchange": "demo.X.incoming.deadletter"
+            }
+        },
+        {
+            "name": "demo.Q.incoming.shard_4",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-dead-letter-exchange": "demo.X.incoming.deadletter"
+            }
+        },
+        {
+            "name": "demo.Q.incoming.shard_5",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-dead-letter-exchange": "demo.X.incoming.deadletter"
+            }
+        },
+        {
+            "name": "demo.Q.incoming.shard_6",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-dead-letter-exchange": "demo.X.incoming.deadletter"
+            }
+        },
+        {
+            "name": "demo.Q.incoming.shard_7",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-dead-letter-exchange": "demo.X.incoming.deadletter"
+            }
+        },
+        {
+            "name": "demo.Q.incoming.shard_8",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-dead-letter-exchange": "demo.X.incoming.deadletter"
+            }
+        },
+        {
+            "name": "demo.Q.incoming.shard_9",
             "vhost": "/",
             "durable": true,
             "auto_delete": false,
@@ -51,17 +123,81 @@
         {
             "source": "demo.X.incoming",
             "vhost": "/",
-            "destination": "demo.Q.incoming.1",
+            "destination": "demo.Q.incoming.shard_0",
             "destination_type": "queue",
-            "routing_key": "type1",
+            "routing_key": "shard-0",
             "arguments": {}
         },
         {
             "source": "demo.X.incoming",
             "vhost": "/",
-            "destination": "demo.Q.incoming.2",
+            "destination": "demo.Q.incoming.shard_1",
             "destination_type": "queue",
-            "routing_key": "type2",
+            "routing_key": "shard-1",
+            "arguments": {}
+        },
+        {
+            "source": "demo.X.incoming",
+            "vhost": "/",
+            "destination": "demo.Q.incoming.shard_2",
+            "destination_type": "queue",
+            "routing_key": "shard-2",
+            "arguments": {}
+        },
+        {
+            "source": "demo.X.incoming",
+            "vhost": "/",
+            "destination": "demo.Q.incoming.shard_3",
+            "destination_type": "queue",
+            "routing_key": "shard-3",
+            "arguments": {}
+        },
+        {
+            "source": "demo.X.incoming",
+            "vhost": "/",
+            "destination": "demo.Q.incoming.shard_4",
+            "destination_type": "queue",
+            "routing_key": "shard-4",
+            "arguments": {}
+        },
+        {
+            "source": "demo.X.incoming",
+            "vhost": "/",
+            "destination": "demo.Q.incoming.shard_5",
+            "destination_type": "queue",
+            "routing_key": "shard-5",
+            "arguments": {}
+        },
+        {
+            "source": "demo.X.incoming",
+            "vhost": "/",
+            "destination": "demo.Q.incoming.shard_6",
+            "destination_type": "queue",
+            "routing_key": "shard-6",
+            "arguments": {}
+        },
+        {
+            "source": "demo.X.incoming",
+            "vhost": "/",
+            "destination": "demo.Q.incoming.shard_7",
+            "destination_type": "queue",
+            "routing_key": "shard-7",
+            "arguments": {}
+        },
+        {
+            "source": "demo.X.incoming",
+            "vhost": "/",
+            "destination": "demo.Q.incoming.shard_8",
+            "destination_type": "queue",
+            "routing_key": "shard-8",
+            "arguments": {}
+        },
+        {
+            "source": "demo.X.incoming",
+            "vhost": "/",
+            "destination": "demo.Q.incoming.shard_9",
+            "destination_type": "queue",
+            "routing_key": "shard-9",
             "arguments": {}
         },
         {
