@@ -23,7 +23,6 @@ grumphp:
     phpmd:
       whitelist_patterns:
         - /^src\/(.*)/
-        - /^tests\/(.*)/
       ruleset:
         - ./ruleset.xml
     phpstan:

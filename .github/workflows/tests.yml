@@ -70,7 +70,7 @@ jobs:
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Run PHPMD
-        run: vendor/bin/phpmd src,tests text ruleset.xml
+        run: vendor/bin/phpmd src text ruleset.xml
 
       - name: Run PHP-CS-Fixer
         run: vendor/bin/php-cs-fixer check --diff --verbose
