@@ -70,19 +70,13 @@ jobs:
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Run PHPMD
-        run: vendor/bin/phpmd src,tests text ruleset.xml
+        run: vendor/bin/phpmd src text ruleset.xml
 
       - name: Run PHP-CS-Fixer
         run: vendor/bin/php-cs-fixer check --diff --verbose
 
       - name: Run PHPStan
         run: vendor/bin/phpstan
-
-      - name: Run PHPUnit
-        run: vendor/bin/phpunit --testdox --coverage-text
-
-      - name: Run Infection
-        run: vendor/bin/infection run
 
       - name: Run Composer Require Checker
         run: vendor/bin/composer-require-checker

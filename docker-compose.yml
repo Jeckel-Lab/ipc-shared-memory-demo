@@ -1,0 +1,45 @@
+version: "3.3"
+
+volumes:
+  prometheus-data:
+  rabbitmq-data:
+  grafana-data:
+
+services:
+  demo:
+    build:
+      context: .docker
+    volumes:
+      - .:/project
+    working_dir: /project
+    ports:
+      - "9001:9001" # Supervisor admin panel
+
+  prometheus:
+    image: bitnami/prometheus:latest
+    volumes:
+      - prometheus-data:/opt/bitnami/prometheus/data
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=“admin”
+      - GF_SECURITY_ADMIN_USER=“admin”
+    volumes:
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+
+  rabbitmq:
+    image: rabbitmq:management
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+      - ./.docker/rabbitmq_definitions.json:/scripts/definitions.json:ro
+    ports:
+      # - "5672:5672"   # Daemon port
+      - "15672:15672"   # Management port

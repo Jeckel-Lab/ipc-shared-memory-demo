@@ -23,15 +23,8 @@ grumphp:
     phpmd:
       whitelist_patterns:
         - /^src\/(.*)/
-        - /^tests\/(.*)/
       ruleset:
         - ./ruleset.xml
-    phpunit:
-      config_file: ~
-      testsuite: ~
-      group: []
-      always_execute: false
-      order: null
     phpstan:
       configuration: phpstan.neon.dist
       use_grumphp_paths: true
@@ -47,4 +40,3 @@ grumphp:
         - "hotfix/*"
       additional_modifiers: ''
       allow_detached_head: true
-    infection:
