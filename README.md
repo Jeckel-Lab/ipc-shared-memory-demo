@@ -16,15 +16,7 @@ A demo project on how to use the IPC-Shared-Memory package
 
 ## Installation
 
-```shell
-composer require jeckel/ipc-shared-memory-demo
-```
-
-## Running tests
-
-```shell
-composer test
-```
+> This project requires [castor](https://github.com/jolicode/castor) to run.
 
 ## License
 
