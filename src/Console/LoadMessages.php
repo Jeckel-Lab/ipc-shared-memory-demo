@@ -32,7 +32,7 @@ class LoadMessages extends Command
     {
         $channel = $this->getChannel();
 
-        $exchange = 'demo.X.incoming';
+        $exchange = (string) getenv('RABBITMQ_EXCHANGE');
 
         $batch = 100;
         $max = 1000 * 1000;
@@ -89,7 +89,12 @@ class LoadMessages extends Command
     protected function getConnection(): AMQPStreamConnection
     {
         if (null === $this->connection) {
-            $this->connection = new AMQPStreamConnection('rabbitmq', 5672, 'guest', 'guest');
+            $this->connection = new AMQPStreamConnection(
+                (string) getenv('RABBITMQ_HOST'),
+                (int) getenv('RABBITMQ_PORT'),
+                (string) getenv('RABBITMQ_USER'),
+                (string) getenv('RABBITMQ_PASS')
+            );
         }
         return $this->connection;
     }
