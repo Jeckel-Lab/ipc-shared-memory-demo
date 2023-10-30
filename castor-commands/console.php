@@ -21,5 +21,7 @@ use function Castor\run;
 function console(
     string $consoleCommand
 ): void {
-    run('docker-compose -f docker-compose.yml exec demo php console.php ' . $consoleCommand);
+    run(
+        'docker-compose -f docker-compose.yml exec demo php -d max_execution_time=120 console.php ' . $consoleCommand
+    );
 }
