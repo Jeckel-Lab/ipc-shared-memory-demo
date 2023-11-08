@@ -11,31 +11,36 @@ namespace docker;
 
 use Castor\Attribute\AsTask;
 use function Castor\run;
-use function php\console;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
 #[AsTask(description: 'Start docker containers')]
 function up(): void {
-    run(
-        command: 'docker-compose -f docker-compose.yml up',
-        timeout: 0
-    );
+    docker_compose(command: 'up', timeout: 0);
 }
 
 #[AsTask(description: 'Stop and clean docker containers')]
 function down(): void {
-    run(
-        command: 'docker-compose -f docker-compose.yml down -v'
-    );
+    docker_compose('down -v');
 }
 
 #[AsTask(description: 'Initialize rabbitmq configuration')]
 function init(): void {
+    docker_compose_exec('rabbitmq', 'rabbitmqctl import_definitions /scripts/definitions.json');
+}
+
+function docker_compose(
+    string $command,
+    ?int $timeout = null
+): void {
     run(
-        command: 'docker-compose -f docker-compose.yml up -d rabbitmq'
+        command: 'docker-compose -f docker-compose.yml ' . $command,
+        timeout: $timeout
     );
-    run(
-        command: 'docker-compose -f docker-compose.yml exec rabbitmq rabbitmqctl import_definitions /scripts/definitions.json'
-    );
+}
+
+function docker_compose_exec(string $container, string $command, ?int $timeout = null): void
+{
+    docker_compose("up -d $container");
+    docker_compose("exec $container $command", $timeout);
 }
