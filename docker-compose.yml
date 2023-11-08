@@ -27,6 +27,7 @@ services:
     image: bitnami/prometheus:latest
     volumes:
       - prometheus-data:/opt/bitnami/prometheus/data
+      - ./.docker/prometheus.yml:/opt/bitnami/prometheus/conf/prometheus.yml:ro
     ports:
       - "9090:9090"
 
