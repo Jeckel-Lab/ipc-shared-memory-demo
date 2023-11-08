@@ -8,5 +8,5 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
-
-echo "Hello World!\n";
+?>
+demo_up 1

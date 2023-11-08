@@ -11,6 +11,7 @@ services:
       context: .docker
     volumes:
       - .:/project
+      - ./.docker/conf.d:/etc/supervisor/conf.d:ro
     working_dir: /project
     environment:
       - RABBITMQ_USER=guest
@@ -20,6 +21,7 @@ services:
       - RABBITMQ_EXCHANGE=demo.X.incoming
     ports:
       - "9001:9001" # Supervisor admin panel
+      - "8000:80"
 
   prometheus:
     image: bitnami/prometheus:latest
