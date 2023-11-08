@@ -10,12 +10,14 @@ declare(strict_types=1);
 namespace JeckelLab\IpcSharedMemoryDemo\Console;
 
 use Exception;
+use InvalidArgumentException;
 use JeckelLab\IpcSharedMemoryDemo\Message\Message;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPConnectionBlockedException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -24,19 +26,25 @@ class LoadMessages extends Command
 {
     private ?AMQPStreamConnection $connection = null;
 
+    protected function configure(): void
+    {
+        $this->addArgument('nb-messages', InputArgument::REQUIRED, 'Number of messages to load');
+    }
+
+
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $channel = $this->getChannel();
+        $nbMessages = $this->getNbMessagesToLoad($input);
 
+        $channel = $this->getChannel();
         $exchange = (string) getenv('RABBITMQ_EXCHANGE');
 
         $batch = 100;
-        $max = 1000 * 1000;
-        for ($i = 0; $i < $max; $i++) {
+        for ($i = 0; $i < $nbMessages; $i++) {
             $message = $this->getMessage();
             $channel->batch_basic_publish($message, $exchange, $message->getRoutingKey());
 
@@ -54,8 +62,17 @@ class LoadMessages extends Command
         }
 
         $channel->publish_batch();
-        $output->writeln(sprintf('Published %d messages', $max));
+        $output->writeln(sprintf('Published %d messages', $nbMessages));
         return Command::SUCCESS;
+    }
+
+    public function getNbMessagesToLoad(InputInterface $input): int
+    {
+        $arg = $input->getArgument('nb-messages');
+        if (is_numeric($arg)) {
+            return (int) $arg;
+        }
+        throw new InvalidArgumentException('Argument must be a number');
     }
 
     /**
