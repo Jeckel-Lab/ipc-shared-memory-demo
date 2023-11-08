@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace docker;
 
 use Castor\Attribute\AsTask;
+
+use function Castor\notify;
 use function Castor\run;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -27,6 +29,7 @@ function down(): void {
 #[AsTask(description: 'Initialize rabbitmq configuration')]
 function init(): void {
     docker_compose_exec('rabbitmq', 'rabbitmqctl import_definitions /scripts/definitions.json');
+    notify('RabbitMQ Initialized');
 }
 
 function docker_compose(

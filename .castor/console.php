@@ -15,6 +15,7 @@ use Castor\Attribute\AsTask;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
+use function Castor\notify;
 use function Castor\run;
 
 #[AsTask(description: 'Execute console command')]
@@ -25,4 +26,14 @@ function console(
         command: 'docker-compose -f docker-compose.yml exec demo php -d max_execution_time=0 console.php ' . $consoleCommand,
         timeout: 0
     );
+}
+
+#[AsTask(description: 'Load messaged in RabbitMQ', name: 'load-messages')]
+function loadMessages(int $nbMessages): void
+{
+    run(
+        command: 'docker-compose -f docker-compose.yml exec demo php -d max_execution_time=0 console.php demo:load-messages ' . $nbMessages,
+        timeout: 0
+    );
+    notify(sprintf('%d messages loaded', $nbMessages));
 }
