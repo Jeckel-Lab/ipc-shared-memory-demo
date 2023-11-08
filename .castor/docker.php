@@ -16,12 +16,12 @@ use function Castor\run;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-#[AsTask(description: 'Start docker containers')]
+#[AsTask(description: 'Start docker containers', aliases: ['u', 'up'])]
 function up(): void {
     docker_compose(command: 'up', timeout: 0);
 }
 
-#[AsTask(description: 'Stop and clean docker containers')]
+#[AsTask(description: 'Stop and clean docker containers', aliases: ['d', 'down'])]
 function down(): void {
     docker_compose('down -v');
 }
