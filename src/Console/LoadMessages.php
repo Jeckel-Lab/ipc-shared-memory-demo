@@ -35,7 +35,7 @@ class LoadMessages extends Command
         $exchange = (string) getenv('RABBITMQ_EXCHANGE');
 
         $batch = 100;
-        $max = 1000 * 1000;
+        $max = 1000 * 1000 * 10;
         for ($i = 0; $i < $max; $i++) {
             $message = $this->getMessage();
             $channel->batch_basic_publish($message, $exchange, $message->getRoutingKey());

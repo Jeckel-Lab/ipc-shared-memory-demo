@@ -2,4 +2,4 @@
 
 use function Castor\import;
 
-import(__DIR__ . '/castor-commands');
+import(__DIR__ . '/.castor');

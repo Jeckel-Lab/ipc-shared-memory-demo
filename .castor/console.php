@@ -22,6 +22,7 @@ function console(
     string $consoleCommand
 ): void {
     run(
-        'docker-compose -f docker-compose.yml exec demo php -d max_execution_time=120 console.php ' . $consoleCommand
+        command: 'docker-compose -f docker-compose.yml exec demo php -d max_execution_time=0 console.php ' . $consoleCommand,
+        timeout: 0
     );
 }
