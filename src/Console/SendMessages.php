@@ -21,14 +21,14 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'demo:load-messages')]
-class LoadMessages extends Command
+#[AsCommand(name: 'demo:bulk-send-messages')]
+class SendMessages extends Command
 {
     private ?AMQPStreamConnection $connection = null;
 
     protected function configure(): void
     {
-        $this->addArgument('nb-messages', InputArgument::REQUIRED, 'Number of messages to load');
+        $this->addArgument('nb-messages', InputArgument::REQUIRED, 'Number of messages to send');
     }
 
 
@@ -91,8 +91,13 @@ class LoadMessages extends Command
     protected function getMessage(): Message
     {
         $shard = random_int(0, 9);
+        $duration = random_int(10, 100); // 10 - 100 ms
+        $message = [
+            'shard' => $shard,
+            'duration' => $duration,
+        ];
         return (new Message(
-            sprintf('Hello world, dummy message for shard %s', $shard),
+            json_encode($message, JSON_THROW_ON_ERROR),
             [
                 'content_type' => 'text/plain'
             ]

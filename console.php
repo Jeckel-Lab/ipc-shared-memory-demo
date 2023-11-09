@@ -10,11 +10,11 @@ declare(strict_types=1);
 
 require __DIR__ . '/vendor/autoload.php';
 
-use JeckelLab\IpcSharedMemoryDemo\Console\LoadMessages;
+use JeckelLab\IpcSharedMemoryDemo\Console\SendMessages;
 use Symfony\Component\Console\Application;
 
 $application = new Application();
 
-$application->add(new LoadMessages());
+$application->add(new SendMessages());
 
 $application->run();
