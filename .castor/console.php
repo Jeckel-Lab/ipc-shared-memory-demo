@@ -28,11 +28,11 @@ function console(
     );
 }
 
-#[AsTask(description: 'Load messaged in RabbitMQ', name: 'load-messages')]
+#[AsTask(description: 'Load messaged in RabbitMQ', name: 'bulk-send-messages')]
 function loadMessages(int $nbMessages): void
 {
     run(
-        command: 'docker-compose -f docker-compose.yml exec demo php -d max_execution_time=0 console.php demo:load-messages ' . $nbMessages,
+        command: 'docker-compose -f docker-compose.yml exec demo php -d max_execution_time=0 console.php demo:bulk-send-messages ' . $nbMessages,
         timeout: 0
     );
     notify(sprintf('%d messages loaded', $nbMessages));
