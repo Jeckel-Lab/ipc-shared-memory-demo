@@ -31,7 +31,6 @@ class SendMessages extends Command
         $this->addArgument('nb-messages', InputArgument::REQUIRED, 'Number of messages to send');
     }
 
-
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @throws Exception
