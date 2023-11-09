@@ -28,6 +28,10 @@ grumphp:
     phpstan:
       configuration: phpstan.neon.dist
       use_grumphp_paths: true
+      ignore_patterns:
+        - .castor/*
+      triggered_by:
+        - src/
     composer_require_checker:
       composer_file: 'composer.json'
       config_file: ~
