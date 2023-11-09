@@ -44,6 +44,7 @@ class Worker extends Command
 
     protected function consume(AMQPMessage $message, OutputInterface $output): void
     {
+        /** @var array{duration: int} $decodedMessage */
         $decodedMessage = json_decode($message->body, true);
         $output->writeln(sprintf('Received message: %s', $message->body));
         usleep($decodedMessage['duration']);
