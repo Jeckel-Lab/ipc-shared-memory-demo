@@ -17,6 +17,13 @@ class AmqpConnection
 {
     private ?AMQPStreamConnection $connection = null;
 
+    public function __construct(
+        private readonly string $host,
+        private readonly int $port,
+        private readonly string $user,
+        private readonly string $password
+    ) {}
+
     /**
      * @return AMQPStreamConnection
      * @throws Exception
@@ -25,10 +32,10 @@ class AmqpConnection
     {
         if (null === $this->connection) {
             $this->connection = new AMQPStreamConnection(
-                (string) getenv('RABBITMQ_HOST'),
-                (int) getenv('RABBITMQ_PORT'),
-                (string) getenv('RABBITMQ_USER'),
-                (string) getenv('RABBITMQ_PASS')
+                $this->host,
+                $this->port,
+                $this->user,
+                $this->password
             );
         }
         return $this->connection;

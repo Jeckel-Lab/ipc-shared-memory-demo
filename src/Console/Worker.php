@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace JeckelLab\IpcSharedMemoryDemo\Console;
 
 use JeckelLab\IpcSharedMemoryDemo\Service\AmqpConnection;
-use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -20,14 +19,18 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand(name: 'demo:worker')]
 class Worker extends Command
 {
+    public function __construct(private readonly AmqpConnection $connection)
+    {
+        parent::__construct();
+    }
+
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $queue = 'demo.Q.incoming.shard_' . random_int(0, 10);
-        $connection = new AmqpConnection();
-        $channel = $connection->getChannel();
+        $channel = $this->connection->getChannel();
         $channel->basic_qos(0, 10, false);
         $channel->basic_consume(
             queue: $queue,

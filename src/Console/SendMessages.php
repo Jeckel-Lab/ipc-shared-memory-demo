@@ -12,8 +12,7 @@ namespace JeckelLab\IpcSharedMemoryDemo\Console;
 use Exception;
 use InvalidArgumentException;
 use JeckelLab\IpcSharedMemoryDemo\Message\Message;
-use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Connection\AMQPStreamConnection;
+use JeckelLab\IpcSharedMemoryDemo\Service\AmqpConnection;
 use PhpAmqpLib\Exception\AMQPConnectionBlockedException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -24,7 +23,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand(name: 'demo:bulk-send-messages')]
 class SendMessages extends Command
 {
-    private ?AMQPStreamConnection $connection = null;
+    public function __construct(private readonly AmqpConnection $connection)
+    {
+        parent::__construct();
+    }
 
     protected function configure(): void
     {
@@ -39,7 +41,7 @@ class SendMessages extends Command
     {
         $nbMessages = $this->getNbMessagesToLoad($input);
 
-        $channel = $this->getChannel();
+        $channel = $this->connection->getChannel();
         $exchange = (string) getenv('RABBITMQ_EXCHANGE');
 
         $batch = 100;
@@ -53,7 +55,7 @@ class SendMessages extends Command
                 } catch (AMQPConnectionBlockedException) {
                     do {
                         sleep(10);
-                    } while ($this->getConnection()->isBlocked());
+                    } while ($this->connection->getConnection()->isBlocked());
                     $channel->publish_batch();
                 }
                 $output->writeln(sprintf('Published %d messages', $i));
@@ -75,15 +77,6 @@ class SendMessages extends Command
     }
 
     /**
-     * @return AMQPChannel
-     * @throws Exception
-     */
-    protected function getChannel(): AMQPChannel
-    {
-        return ($this->getConnection())->channel();
-    }
-
-    /**
      * @return Message
      * @throws Exception
      */
@@ -101,22 +94,5 @@ class SendMessages extends Command
                 'content_type' => 'text/plain'
             ]
         ))->setRoutingKey(sprintf('shard-%d', $shard));
-    }
-
-    /**
-     * @return AMQPStreamConnection
-     * @throws Exception
-     */
-    protected function getConnection(): AMQPStreamConnection
-    {
-        if (null === $this->connection) {
-            $this->connection = new AMQPStreamConnection(
-                (string) getenv('RABBITMQ_HOST'),
-                (int) getenv('RABBITMQ_PORT'),
-                (string) getenv('RABBITMQ_USER'),
-                (string) getenv('RABBITMQ_PASS')
-            );
-        }
-        return $this->connection;
     }
 }
