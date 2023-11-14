@@ -12,6 +12,7 @@
     "require": {
         "php": "~8.2",
         "php-amqplib/php-amqplib": "^3.6",
+        "php-di/php-di": "^7.0",
         "symfony/console": "^6.3"
     },
     "require-dev": {
