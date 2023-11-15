@@ -1,8 +1,10 @@
 <?php
 
+use Evenement\EventEmitter;
 use JeckelLab\IpcSharedMemoryDemo\Console\Monitor;
 use JeckelLab\IpcSharedMemoryDemo\Console\SendMessages;
 use JeckelLab\IpcSharedMemoryDemo\Console\Worker;
+use JeckelLab\IpcSharedMemoryDemo\EventListener\WorkerListener;
 use JeckelLab\IpcSharedMemoryDemo\Service\AmqpConnection;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
@@ -26,4 +28,8 @@ return [
         user: $container->get('RABBITMQ_USER'),
         password: $container->get('RABBITMQ_PASS')
     ),
+
+    EventEmitter::class => static function(ContainerInterface $container): EventEmitter {
+        return $container->get(WorkerListener::class)->registerListener(new EventEmitter());
+    },
 ];
