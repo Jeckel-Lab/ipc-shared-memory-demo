@@ -11,6 +11,7 @@ namespace JeckelLab\IpcSharedMemoryDemo\Console;
 
 use JeckelLab\IpcSharedMemoryDemo\Service\AmqpConnection;
 use JeckelLab\IpcSharedMemoryDemo\Service\SharedMemory;
+use JeckelLab\IpcSharedMemoryDemo\ValueObject\QueueId;
 use JsonException;
 use PhpAmqpLib\Message\AMQPMessage;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -49,7 +50,7 @@ class Worker extends Command
                 ['type' => 'start', 'pid' => getmypid(), 'queue' => $queue],
                 JSON_THROW_ON_ERROR
             ),
-            messageType: 1
+            messageType: QueueId::MONITOR
         );
 
         try {
@@ -63,7 +64,7 @@ class Worker extends Command
                 ['type' => 'stop', 'pid' => getmypid(), 'queue' => $queue],
                 JSON_THROW_ON_ERROR
             ),
-            messageType: 1
+            messageType: QueueId::MONITOR
         );
         return Command::SUCCESS;
     }
@@ -86,7 +87,7 @@ class Worker extends Command
                     ['type' => 'count', 'pid' => getmypid(), 'count' => $this->count],
                     JSON_THROW_ON_ERROR
                 ),
-                messageType: 1
+                messageType: QueueId::MONITOR
             );
         }
     }

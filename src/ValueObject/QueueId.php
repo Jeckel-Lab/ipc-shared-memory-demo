@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace JeckelLab\IpcSharedMemoryDemo\ValueObject;
 
-class QueueId
+enum QueueId: int
 {
-
+    case MONITOR = 1;
 }

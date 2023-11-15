@@ -11,6 +11,7 @@ namespace JeckelLab\IpcSharedMemoryDemo\Console;
 
 use JeckelLab\IpcSharedMemoryDemo\Service\SharedMemory;
 use JeckelLab\IpcSharedMemoryDemo\ValueObject\MemoryKey;
+use JeckelLab\IpcSharedMemoryDemo\ValueObject\QueueId;
 use JsonException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -35,7 +36,7 @@ class Monitor extends Command
     {
         $this->memory->consume(
             handler: fn(string $message, int $messageType) => $this->handleMessage($message),
-            messageTypeFilter: 1
+            messageTypeFilter: QueueId::MONITOR
         );
         return Command::SUCCESS;
     }

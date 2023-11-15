@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JeckelLab\IpcSharedMemoryDemo\Service;
 
 use JeckelLab\IpcSharedMemoryDemo\ValueObject\MemoryKey;
+use JeckelLab\IpcSharedMemoryDemo\ValueObject\QueueId;
 use RuntimeException;
 use SysvMessageQueue;
 use SysvSharedMemory;
@@ -21,17 +22,16 @@ class SharedMemory
 
     /**
      * @param callable(string $message, int $messageType): void $handler
-     * @param int $messageTypeFilter
-     * @return void
      */
-    public function consume(callable $handler, int $messageTypeFilter = 0): void
+    public function consume(callable $handler, QueueId $messageTypeFilter): void
     {
         $message = '';
         $messageType = 0;
+        /** @phpstan-ignore-next-line */
         while (true) {
-            \msg_receive(
+            msg_receive(
                 queue: $this->getQueue(),
-                desired_message_type: $messageTypeFilter,
+                desired_message_type: $messageTypeFilter->value,
                 received_message_type: $messageType,
                 max_message_size: 4096,
                 message: $message,
@@ -40,9 +40,9 @@ class SharedMemory
         }
     }
 
-    public function publish(string $message, int $messageType = 0): void
+    public function publish(string $message, QueueId $messageType): void
     {
-        msg_send($this->getQueue(), $messageType, $message);
+        msg_send($this->getQueue(), $messageType->value, $message);
     }
 
     public function setValue(MemoryKey $key, mixed $value): void

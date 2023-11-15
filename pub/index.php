@@ -22,11 +22,9 @@ $memory = $container->get(SharedMemory::class);
 $counts = $memory->getValue(MemoryKey::COUNT);
 
 header('Content-Type: text/plain; charset=UTF-8');
-
 ?>
 demo_up 1
 <?php
 foreach ($counts as $pid => $count) {
     printf("demo_worker_count{pid=\"pid_%d\"} %s\n", $pid, $count);
 }
-?>
