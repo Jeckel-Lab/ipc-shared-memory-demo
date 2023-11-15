@@ -11,6 +11,9 @@
     ],
     "require": {
         "php": "~8.2",
+        "ext-sysvmsg": "*",
+        "ext-sysvshm": "*",
+        "evenement/evenement": "^3.0",
         "php-amqplib/php-amqplib": "^3.6",
         "php-di/php-di": "^7.0",
         "symfony/console": "^6.3"
