@@ -48,7 +48,7 @@ class Monitor extends Command
         printf("%s\n", $message);
         /** @var array{type: string, pid: int, queue?: string, count?: int} $decodedMessage */
         $decodedMessage = json_decode($message, true, 512, JSON_THROW_ON_ERROR);
-        if ($decodedMessage['type'] !== 'count' || !is_int($decodedMessage['count'])) {
+        if ($decodedMessage['type'] !== 'count' || !isset($decodedMessage['count'])) {
             return;
         }
         $this->counts[$decodedMessage['pid']] = $decodedMessage['count'];
