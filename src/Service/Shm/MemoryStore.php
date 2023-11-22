@@ -13,7 +13,7 @@ use JeckelLab\IpcSharedMemoryDemo\ValueObject\MemoryKey;
 use RuntimeException;
 use SysvSharedMemory;
 
-class MemoryStorage implements SharedMemoryInterface
+class MemoryStore implements SharedMemoryInterface
 {
     private readonly int $token;
     private ?SysvSharedMemory $sharedMemory = null;
@@ -25,12 +25,12 @@ class MemoryStorage implements SharedMemoryInterface
         $this->token = ftok($this->filename, $this->project_id);
     }
 
-    public function setValue(MemoryKey $key, mixed $value): void
+    public function set(MemoryKey $key, mixed $value): void
     {
         shm_put_var($this->getSharedMemory(), $key->value, $value);
     }
 
-    public function getValue(MemoryKey $key, mixed $default): mixed
+    public function get(MemoryKey $key, mixed $default): mixed
     {
         if (!shm_has_var($this->getSharedMemory(), $key->value)) {
             return $default;

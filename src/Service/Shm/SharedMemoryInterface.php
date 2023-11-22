@@ -9,5 +9,4 @@ namespace JeckelLab\IpcSharedMemoryDemo\Service\Shm;
 
 interface SharedMemoryInterface
 {
-
 }

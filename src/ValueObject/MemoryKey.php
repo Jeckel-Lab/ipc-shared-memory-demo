@@ -12,4 +12,5 @@ namespace JeckelLab\IpcSharedMemoryDemo\ValueObject;
 enum MemoryKey: int
 {
     case COUNT = 1;
+    case QUEUE_RESERVATION = 2;
 }
