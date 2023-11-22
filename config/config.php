@@ -4,6 +4,7 @@ use Evenement\EventEmitter;
 use JeckelLab\IpcSharedMemoryDemo\Console\Monitor;
 use JeckelLab\IpcSharedMemoryDemo\Console\SendMessages;
 use JeckelLab\IpcSharedMemoryDemo\Console\Worker;
+use JeckelLab\IpcSharedMemoryDemo\Console\ZombieKiller;
 use JeckelLab\IpcSharedMemoryDemo\EventListener\WorkerListener;
 use JeckelLab\IpcSharedMemoryDemo\Service\AmqpConnection;
 use Psr\Container\ContainerInterface;
@@ -20,6 +21,7 @@ return [
         $application->add($container->get(SendMessages::class));
         $application->add($container->get(Worker::class));
         $application->add($container->get(Monitor::class));
+        $application->add($container->get(ZombieKiller::class));
         return $application;
     },
     AmqpConnection::class => static fn(ContainerInterface $container): AmqpConnection => new AmqpConnection(

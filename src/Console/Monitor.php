@@ -9,7 +9,8 @@ declare(strict_types=1);
 
 namespace JeckelLab\IpcSharedMemoryDemo\Console;
 
-use JeckelLab\IpcSharedMemoryDemo\Service\SharedMemory;
+use JeckelLab\IpcSharedMemoryDemo\Service\Shm\MemoryQueue;
+use JeckelLab\IpcSharedMemoryDemo\Service\Shm\MemoryStore;
 use JeckelLab\IpcSharedMemoryDemo\ValueObject\MemoryKey;
 use JeckelLab\IpcSharedMemoryDemo\ValueObject\QueueId;
 use JsonException;
@@ -24,8 +25,10 @@ class Monitor extends Command
     /** @var array<int, int> */
     protected array $counts = [];
 
-    public function __construct(private readonly SharedMemory $memory)
-    {
+    public function __construct(
+        private readonly MemoryQueue $memoryQueue,
+        private readonly MemoryStore $memoryStorage
+    ) {
         parent::__construct();
     }
 
@@ -34,7 +37,7 @@ class Monitor extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->memory->consume(
+        $this->memoryQueue->consume(
             handler: fn(string $message, int $messageType) => $this->handleMessage($message),
             messageTypeFilter: QueueId::MONITOR
         );
@@ -53,6 +56,6 @@ class Monitor extends Command
             return;
         }
         $this->counts[$decodedMessage['pid']] = $decodedMessage['count'];
-        $this->memory->setValue(MemoryKey::COUNT, $this->counts);
+        $this->memoryStorage->set(MemoryKey::COUNT, $this->counts);
     }
 }
