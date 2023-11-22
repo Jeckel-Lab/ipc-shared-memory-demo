@@ -10,14 +10,14 @@ declare(strict_types=1);
 namespace JeckelLab\IpcSharedMemoryDemo\EventListener;
 
 use Evenement\EventEmitter;
-use JeckelLab\IpcSharedMemoryDemo\Service\SharedMemory;
+use JeckelLab\IpcSharedMemoryDemo\Service\Shm\MemoryQueue;
 use JeckelLab\IpcSharedMemoryDemo\ValueObject\QueueId;
 use JsonException;
 
 readonly class WorkerListener
 {
     public function __construct(
-        private SharedMemory $memory
+        private MemoryQueue $memoryQueue
     ) {}
 
     public function registerListener(EventEmitter $emitter): EventEmitter
@@ -33,7 +33,7 @@ readonly class WorkerListener
      */
     private function onWorkerStarted(string $queue): void
     {
-        $this->memory->publish(
+        $this->memoryQueue->publish(
             message: json_encode(
                 ['type' => 'start', 'pid' => getmypid(), 'queue' => $queue],
                 JSON_THROW_ON_ERROR
@@ -47,7 +47,7 @@ readonly class WorkerListener
      */
     private function onWorkerHeartbeat(int $count): void
     {
-        $this->memory->publish(
+        $this->memoryQueue->publish(
             message: json_encode(
                 ['type' => 'count', 'pid' => getmypid(), 'count' => $count],
                 JSON_THROW_ON_ERROR
@@ -61,7 +61,7 @@ readonly class WorkerListener
      */
     private function onWorkerStop(): void
     {
-        $this->memory->publish(
+        $this->memoryQueue->publish(
             message: json_encode(
                 ['type' => 'stop', 'pid' => getmypid()],
                 JSON_THROW_ON_ERROR

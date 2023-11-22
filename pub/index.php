@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-use JeckelLab\IpcSharedMemoryDemo\Service\SharedMemory;
+use JeckelLab\IpcSharedMemoryDemo\Service\Shm\MemoryStorage;
 use JeckelLab\IpcSharedMemoryDemo\ValueObject\MemoryKey;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -16,10 +16,10 @@ $container = (new DI\ContainerBuilder())
     ->addDefinitions(__DIR__ . '/../config/config.php')
     ->build();
 
-/** @var SharedMemory $memory */
-$memory = $container->get(SharedMemory::class);
+/** @var MemoryStorage $memory */
+$memory = $container->get(MemoryStorage::class);
 
-$counts = $memory->getValue(MemoryKey::COUNT);
+$counts = $memory->getValue(MemoryKey::COUNT, []);
 
 header('Content-Type: text/plain; charset=UTF-8');
 ?>
