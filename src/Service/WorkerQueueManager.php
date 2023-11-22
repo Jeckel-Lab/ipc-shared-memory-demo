@@ -35,12 +35,7 @@ class WorkerQueueManager
 
     public function getFreeQueue(): string|null
     {
-        /** @var array<int, null|int> $queueReservation */
-        $queueReservation = $this->memoryStore->get(
-            key: MemoryKey::QUEUE_RESERVATION,
-            default: self::DEFAULT_QUEUE_RESERVATION,
-            lock: true
-        );
+        $queueReservation = $this->getReservations();
 
         foreach ($queueReservation as $key => $value) {
             if ($value === null) {
@@ -52,11 +47,7 @@ class WorkerQueueManager
                     ));
                 }
                 $queueReservation[$key] = $pid;
-                $this->memoryStore->set(
-                    key: MemoryKey::QUEUE_RESERVATION,
-                    value: $queueReservation,
-                    release: true
-                );
+                $this->updateReservations($queueReservation);
                 return 'demo.Q.incoming.shard_' . $key;
             }
         }
@@ -67,19 +58,60 @@ class WorkerQueueManager
     public function releaseQueue(string $queue): void
     {
         $queueId = (int) substr($queue, 0, -1);
+        $this->releaseQueueId($queueId);
+    }
 
+    public function clearZombies(): void
+    {
+        $queueReservation = $this->getReservations();
+
+        foreach ($queueReservation as $queueId => $pid) {
+            if ($pid === null) {
+                continue;
+            }
+            // check if the process is still alive
+            if (posix_kill($pid, 0)) {
+                continue;
+            }
+            $this->releaseQueueId($queueId, false);
+        }
+        $this->memoryStore->release(MemoryKey::QUEUE_RESERVATION);
+    }
+
+    /**
+     * @return array<int, null|int>
+     */
+    protected function getReservations(): array
+    {
         /** @var array<int, null|int> $queueReservation */
         $queueReservation = $this->memoryStore->get(
             key: MemoryKey::QUEUE_RESERVATION,
             default: self::DEFAULT_QUEUE_RESERVATION,
             lock: true
         );
+        return $queueReservation;
+    }
 
-        $queueReservation[$queueId] = null;
+    /**
+     * @param array<int, null|int> $queueReservation
+     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+     */
+    protected function updateReservations(array $queueReservation, bool $release = true): void
+    {
         $this->memoryStore->set(
             key: MemoryKey::QUEUE_RESERVATION,
             value: $queueReservation,
-            release: true
+            release: $release
         );
+    }
+
+    /**
+     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+     */
+    protected function releaseQueueId(int $queueId, bool $release = true): void
+    {
+        $queueReservation = $this->getReservations();
+        $queueReservation[$queueId] = null;
+        $this->updateReservations($queueReservation, $release);
     }
 }
