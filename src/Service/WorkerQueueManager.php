@@ -33,10 +33,14 @@ class WorkerQueueManager
 
     public function __construct(private readonly MemoryStore $memoryStore) {}
 
-    public function getFreeQueue(): string
+    public function getFreeQueue(): string|false
     {
         /** @var array<int, null|int> $queueReservation */
-        $queueReservation = $this->memoryStore->get(MemoryKey::QUEUE_RESERVATION, self::DEFAULT_QUEUE_RESERVATION);
+        $queueReservation = $this->memoryStore->get(
+            key: MemoryKey::QUEUE_RESERVATION,
+            default: self::DEFAULT_QUEUE_RESERVATION,
+            lock: true
+        );
 
         foreach ($queueReservation as $key => $value) {
             if ($value === null) {
@@ -48,10 +52,23 @@ class WorkerQueueManager
                     ));
                 }
                 $queueReservation[$key] = $pid;
-                $this->memoryStore->set(MemoryKey::QUEUE_RESERVATION, $queueReservation);
+                $this->memoryStore->set(
+                    key: MemoryKey::QUEUE_RESERVATION,
+                    value: $queueReservation,
+                    release: true
+                );
                 return 'demo.Q.incoming.shard_' . $key;
             }
         }
-        throw new RuntimeException('No free queue');
+        $this->memoryStore->release(MemoryKey::QUEUE_RESERVATION);
+        return false;
+    }
+
+    public function getFreeQueueOrWait(): string
+    {
+        while (($queue = $this->getFreeQueue()) === false) {
+            sleep(1);
+        }
+        return $queue;
     }
 }

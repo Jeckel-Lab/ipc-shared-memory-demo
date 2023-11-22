@@ -38,7 +38,7 @@ class Worker extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $queue = $this->queueManager->getFreeQueue();
+        $queue = $this->queueManager->getFreeQueueOrWait();
         $channel = $this->connection->getChannel();
         $channel->basic_qos(0, 10, false);
         $channel->basic_consume(
