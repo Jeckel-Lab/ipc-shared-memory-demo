@@ -6,6 +6,7 @@
  */
 
 declare(strict_types=1);
+declare(ticks=1);
 
 namespace JeckelLab\IpcSharedMemoryDemo\Console;
 
@@ -23,6 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Worker extends Command
 {
     private int $count = 0;
+    private bool $stop = false;
 
     public function __construct(
         private readonly AmqpConnection $connection,
@@ -35,24 +37,34 @@ class Worker extends Command
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @throws JsonException
+     * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $queue = $this->queueManager->getFreeQueueOrWait();
-        $channel = $this->connection->getChannel();
-        $channel->basic_qos(0, 10, false);
-        $channel->basic_consume(
-            queue: $queue,
-            callback: fn(AMQPMessage $message) => $this->consume($message, $output)
-        );
-        $this->emitter->emit('worker.start', ['queue' => $queue]);
+        pcntl_signal(SIGTERM, fn() => $this->stop = true);
 
-        try {
-            $channel->consume();
-        } catch (\Throwable $exception) {
-            echo $exception->getMessage();
+        $queue = null;
+        while ($queue === null) {
+            if ($this->stop) {
+                return Command::SUCCESS;
+            }
+            $queue = $this->queueManager->getFreeQueue();
         }
 
+        $channel = $this->connection->getChannel();
+        $channel->basic_qos(0, 10, false);
+
+        $this->emitter->emit('worker.start', ['queue' => $queue]);
+
+        while (!$this->stop) {
+            $message = $channel->basic_get($queue);
+            if (null === $message) {
+                sleep(1);
+                continue;
+            }
+            $this->consume($message, $output);
+        }
+        $this->queueManager->releaseQueue($queue);
         $this->emitter->emit('worker.stop');
         return Command::SUCCESS;
     }

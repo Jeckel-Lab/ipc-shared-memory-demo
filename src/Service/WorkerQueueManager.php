@@ -33,7 +33,7 @@ class WorkerQueueManager
 
     public function __construct(private readonly MemoryStore $memoryStore) {}
 
-    public function getFreeQueue(): string|false
+    public function getFreeQueue(): string|null
     {
         /** @var array<int, null|int> $queueReservation */
         $queueReservation = $this->memoryStore->get(
@@ -61,14 +61,25 @@ class WorkerQueueManager
             }
         }
         $this->memoryStore->release(MemoryKey::QUEUE_RESERVATION);
-        return false;
+        return null;
     }
 
-    public function getFreeQueueOrWait(): string
+    public function releaseQueue(string $queue): void
     {
-        while (($queue = $this->getFreeQueue()) === false) {
-            sleep(1);
-        }
-        return $queue;
+        $queueId = (int) substr($queue, 0, -1);
+
+        /** @var array<int, null|int> $queueReservation */
+        $queueReservation = $this->memoryStore->get(
+            key: MemoryKey::QUEUE_RESERVATION,
+            default: self::DEFAULT_QUEUE_RESERVATION,
+            lock: true
+        );
+
+        $queueReservation[$queueId] = null;
+        $this->memoryStore->set(
+            key: MemoryKey::QUEUE_RESERVATION,
+            value: $queueReservation,
+            release: true
+        );
     }
 }

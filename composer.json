@@ -14,6 +14,7 @@
         "ext-sysvmsg": "*",
         "ext-sysvshm": "*",
         "ext-sysvsem": "*",
+        "ext-pcntl": "*",
         "evenement/evenement": "^3.0",
         "php-amqplib/php-amqplib": "^3.6",
         "php-di/php-di": "^7.0",

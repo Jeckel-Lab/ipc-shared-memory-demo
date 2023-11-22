@@ -6,6 +6,6 @@ RUN apt-get -y update && \
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 RUN mkdir /var/supervisor
 
-RUN docker-php-ext-install -j$(nproc) sysvmsg sysvshm sysvsem
+RUN docker-php-ext-install -j$(nproc) sysvmsg sysvshm sysvsem pcntl
 
 CMD /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
