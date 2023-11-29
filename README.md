@@ -18,6 +18,16 @@ A demo project on how to use the IPC-Shared-Memory package
 
 > This project requires [castor](https://github.com/jolicode/castor) to run.
 
+```bash
+castor up
+
+# Setup rabbitmq configuration
+castor docker:init
+
+# Load messages in the queues
+castor php:bulk-send-messages 20000000
+```
+
 ## License
 
 This project is published under the [MIT License](LICENSE).

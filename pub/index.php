@@ -19,6 +19,7 @@ $container = (new DI\ContainerBuilder())
 /** @var MemoryStore $memory */
 $memory = $container->get(MemoryStore::class);
 
+/** @var array<int, array{count: int, errorCount: int}> $counts */
 $counts = $memory->get(MemoryKey::COUNT, []);
 $queues = $memory->get(MemoryKey::QUEUE_RESERVATION, []);
 
@@ -27,8 +28,9 @@ header('Content-Type: text/plain; charset=UTF-8');
 demo_up 1
 <?php
 foreach ($counts as $pid => $count) {
-    printf("demo_worker_count{pid=\"pid_%d\"} %s\n", $pid, $count);
+    printf("demo_worker_count_total{pid=\"pid_%d\"} %s\n", $pid, $count['count']);
+    printf("demo_worker_count_error{pid=\"pid_%d\"} %s\n", $pid, $count['errorCount']);
 }
-foreach ($queues as $queue => $pid) {
+foreach (array_filter($queues) as $queue => $pid) {
     printf("demo_worker_queue{queue=\"%s\"} %s\n", $queue, $pid);
 }

@@ -22,7 +22,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand(name: 'demo:monitor')]
 class Monitor extends Command
 {
-    /** @var array<int, int> */
+    /** @var array<int, array{count: int, errorCount: int}> */
     protected array $counts = [];
 
     public function __construct(
@@ -50,12 +50,15 @@ class Monitor extends Command
     protected function handleMessage(string $message): void
     {
         printf("%s\n", $message);
-        /** @var array{type: string, pid: int, queue?: string, count?: int} $decodedMessage */
+        /** @var array{type: string, pid: int, queue?: string, count?: int, errorCount?: int} $decodedMessage */
         $decodedMessage = json_decode($message, true, 512, JSON_THROW_ON_ERROR);
-        if ($decodedMessage['type'] !== 'count' || !isset($decodedMessage['count'])) {
+        if (!isset($decodedMessage['count'], $decodedMessage['errorCount']) || $decodedMessage['type'] !== 'count') {
             return;
         }
-        $this->counts[$decodedMessage['pid']] = $decodedMessage['count'];
+        $this->counts[$decodedMessage['pid']] = [
+            'count' => $decodedMessage['count'],
+            'errorCount' => $decodedMessage['errorCount']
+        ];
         $this->memoryStorage->set(MemoryKey::COUNT, $this->counts);
     }
 }

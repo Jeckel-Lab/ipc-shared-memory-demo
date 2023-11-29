@@ -24,7 +24,7 @@ readonly class WorkerListener
     {
         $emitter->on('worker.start', fn(string $queue) => $this->onWorkerStarted($queue));
         $emitter->on('worker.stop', fn() => $this->onWorkerStop());
-        $emitter->on('worker.heartbeat', fn(int $count) => $this->onWorkerHeartbeat($count));
+        $emitter->on('worker.heartbeat', fn(int $count, int $errorCount) => $this->onWorkerHeartbeat($count, $errorCount));
         return $emitter;
     }
 
@@ -45,11 +45,11 @@ readonly class WorkerListener
     /**
      * @throws JsonException
      */
-    private function onWorkerHeartbeat(int $count): void
+    private function onWorkerHeartbeat(int $count, int $errorCount): void
     {
         $this->memoryQueue->publish(
             message: json_encode(
-                ['type' => 'count', 'pid' => getmypid(), 'count' => $count],
+                ['type' => 'count', 'pid' => getmypid(), 'count' => $count, 'errorCount' => $errorCount],
                 JSON_THROW_ON_ERROR
             ),
             messageType: QueueId::MONITOR

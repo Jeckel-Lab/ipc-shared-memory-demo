@@ -12,6 +12,7 @@ namespace JeckelLab\IpcSharedMemoryDemo\Console;
 
 use Evenement\EventEmitter;
 use JeckelLab\IpcSharedMemoryDemo\Service\AmqpConnection;
+use JeckelLab\IpcSharedMemoryDemo\Service\Task\UpdateStock;
 use JeckelLab\IpcSharedMemoryDemo\Service\WorkerQueueManager;
 use JsonException;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -24,12 +25,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Worker extends Command
 {
     private int $count = 0;
+    private int $errorCount = 0;
     private bool $stop = false;
 
     public function __construct(
         private readonly AmqpConnection $connection,
         private readonly EventEmitter $emitter,
-        private readonly WorkerQueueManager $queueManager
+        private readonly WorkerQueueManager $queueManager,
+        private readonly UpdateStock $task
     ) {
         parent::__construct();
     }
@@ -76,13 +79,18 @@ class Worker extends Command
     {
         /** @var array{duration: int} $decodedMessage */
         $decodedMessage = json_decode($message->body, true, 512, JSON_THROW_ON_ERROR);
-        $output->writeln(sprintf('Received message: %s', $message->body));
-        usleep($decodedMessage['duration']);
-        $message->ack();
+        try {
+            $this->task->update($decodedMessage['duration']);
+            $message->ack();
+        } catch (\Throwable $e) {
+            $output->writeln(sprintf('Error: %s', $e->getMessage()));
+            $message->nack(requeue: true);
+            $this->errorCount++;
+        }
         $this->count++;
 
         if ($this->count % 100 === 0) {
-            $this->emitter->emit('worker.heartbeat', ['count' => $this->count]);
+            $this->emitter->emit('worker.heartbeat', ['count' => $this->count, 'errorCount' => $this->errorCount]);
         }
     }
 }

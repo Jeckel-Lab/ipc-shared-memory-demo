@@ -83,7 +83,7 @@ class SendMessages extends Command
     protected function getMessage(): Message
     {
         $shard = random_int(0, 9);
-        $duration = random_int(10, 100); // 10 - 100 µs
+        $duration = random_int(10, 100) * 100; // 10 - 100 µs
         $message = [
             'shard' => $shard,
             'duration' => $duration,
