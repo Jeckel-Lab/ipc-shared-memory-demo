@@ -23,3 +23,12 @@ function ide(): void
         quiet: true
     );
 }
+
+#[AsTask(description: 'Start worker', aliases: ['worker'])]
+function start_worker(): void
+{
+    run(
+        command: 'docker-compose exec demo php console.php demo:worker',
+        timeout: 0,
+    );
+}
