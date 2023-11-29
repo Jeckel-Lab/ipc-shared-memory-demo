@@ -41,3 +41,6 @@ services:
     ports:
       # - "5672:5672"   # Daemon port
       - "15672:15672"   # Management port
+
+  redis:
+    image: redis:7

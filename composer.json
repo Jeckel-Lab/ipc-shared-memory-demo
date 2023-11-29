@@ -11,14 +11,15 @@
     ],
     "require": {
         "php": "~8.2",
-        "ext-sysvmsg": "*",
-        "ext-sysvshm": "*",
-        "ext-sysvsem": "*",
         "ext-pcntl": "*",
         "ext-posix": "*",
+        "ext-sysvmsg": "*",
+        "ext-sysvsem": "*",
+        "ext-sysvshm": "*",
         "evenement/evenement": "^3.0",
         "php-amqplib/php-amqplib": "^3.6",
         "php-di/php-di": "^7.0",
+        "predis/predis": "^2.2",
         "symfony/console": "^6.3"
     },
     "require-dev": {
